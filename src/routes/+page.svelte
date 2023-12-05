@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { flip } from 'svelte/animate';
+	let helpText = false;
 
 	type Vec = { x: number; y: number };
 	const cols = 4;
@@ -50,7 +51,6 @@
 
 		cells = cells;
 	};
-	let helpText = false;
 
 	const isShuffled = () => cells.every((cell, i) => cell.id !== i);
 	$: isSolved = () => cells.every((cell, i) => cell.id === i);
@@ -75,33 +75,50 @@
 	shuffle();
 </script>
 
-<div
-	class="grid grid-cols-4 mx-auto overflow-clip duration-1000 {isSolved()
-		? 'gap-0 p-0'
-		: 'gap-1 p-1'}"
->
-	{#each cells as cell, i (cell)}
+<div class="">
+	<div class="px-1 pt-1 text-white grid grid-cols-4 gap-1">
 		<button
-			animate:flip={{ duration: 250 }}
-			class:gap={cell.id === gapId && !isSolved()}
-			class:isCorrect={cell.id === i}
-			on:click={() => move(i)}
-			class="grayscale flex items-center justify-center text-xl aspect-square bg-no-repeat"
-			style="background-image: url({bgUrl}); background-size: {cols *
-				100}%; background-position: {cell.offsetX}% {cell.offsetY}%;"
+			on:click={() => (helpText = !helpText)}
+			class="p-2 rounded bg-gray-700 {helpText && 'shadow bg-gray-500'}">Help</button
 		>
-			{#if helpText}
-				{cell.id}
-			{/if}
-		</button>
-	{/each}
+		<div class="col-span-2"></div>
+		<button class="bg-gray-600 rounded-sm" on:click={() => shuffle()}>Restart</button>
+	</div>
+	<div
+		class="fit-in-screen grid grid-cols-4 duration-1000 {isSolved()
+			? 'gap-0 p-0 mt-1'
+			: 'gap-1 p-1'}"
+	>
+		{#each cells as cell, i (cell)}
+			<button
+				animate:flip={{ duration: 250 }}
+				class:gap={cell.id === gapId && !isSolved()}
+				class:isCorrect={cell.id === i}
+				on:click={() => move(i)}
+				class="grayscale rounded shadow flex items-center justify-center text-xl aspect-square bg-no-repeat"
+				style="background-image: url({bgUrl}); background-size: {cols *
+					100}%; background-position: {cell.offsetX}% {cell.offsetY}%;"
+			>
+				{#if helpText && cell.id !== gapId && !isSolved()}
+					<div
+						class="bg-gray-700 text-white opacity-80 shadow-xl flex w-8 md:w-12 justify-center items-center aspect-square rounded"
+					>
+						{cell.id + 1}
+					</div>
+				{/if}
+			</button>
+		{/each}
+	</div>
 </div>
 
 <style lang="postcss">
+	.fit-in-screen {
+		width: min(100, 100vh);
+	}
 	.gap {
 		@apply bg-none shadow-none -z-10 !important;
 	}
 	.isCorrect {
-		@apply grayscale-0 !important;
+		@apply grayscale-0 rounded-none !important;
 	}
 </style>
