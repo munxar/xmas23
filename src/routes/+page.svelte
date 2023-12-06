@@ -1,10 +1,16 @@
 <script lang="ts">
+	import { page } from '$app/stores';
+	import { convertImg } from '$lib/img';
+	import { onMount } from 'svelte';
 	import { flip } from 'svelte/animate';
+	import Layout from './+layout.svelte';
 	let helpText = false;
 
 	type Vec = { x: number; y: number };
 	const cols = 4;
-	const bgUrl = `/bg${Math.floor(Math.random() * 2)}.jpeg`;
+
+	let randomBg = () => `/bg${Math.floor(Math.random() * 9)}.jpeg`;
+	let bgUrl = randomBg();
 	const indexToVec = (i: number) => ({
 		x: i % cols,
 		y: Math.floor(i / cols)
@@ -73,41 +79,54 @@
 		}
 	};
 	shuffle();
+	let width: number, height: number;
+	$: size = Math.min(width, height);
+	const restart = () => {
+		bgUrl = randomBg();
+		shuffle();
+	};
 </script>
 
-<div class="">
-	<div class="px-1 pt-1 text-white grid grid-cols-4 gap-1">
+<div class="flex flex-col h-full m-auto">
+	<div style="width: {size}px;" class="px-1 pt-1 text-white grid grid-cols-4 gap-1">
 		<button
 			on:click={() => (helpText = !helpText)}
 			class="p-2 rounded bg-gray-700 {helpText && 'shadow bg-gray-500'}">Help</button
 		>
 		<div class="col-span-2"></div>
-		<button class="bg-gray-600 rounded-sm" on:click={() => shuffle()}>Restart</button>
+		<button class="bg-gray-600 rounded-sm" on:click={() => restart()}>Restart</button>
 	</div>
 	<div
-		class="fit-in-screen grid grid-cols-4 duration-1000 {isSolved()
-			? 'gap-0 p-0 mt-1'
-			: 'gap-1 p-1'}"
+		bind:clientHeight={height}
+		bind:clientWidth={width}
+		class="flex flex-col flex-grow justify-center"
 	>
-		{#each cells as cell, i (cell)}
-			<button
-				animate:flip={{ duration: 250 }}
-				class:gap={cell.id === gapId && !isSolved()}
-				class:isCorrect={cell.id === i}
-				on:click={() => move(i)}
-				class="grayscale rounded shadow flex items-center justify-center text-xl aspect-square bg-no-repeat"
-				style="background-image: url({bgUrl}); background-size: {cols *
-					100}%; background-position: {cell.offsetX}% {cell.offsetY}%;"
-			>
-				{#if helpText && cell.id !== gapId && !isSolved()}
-					<div
-						class="bg-gray-700 text-white opacity-80 shadow-xl flex w-8 md:w-12 justify-center items-center aspect-square rounded"
-					>
-						{cell.id + 1}
-					</div>
-				{/if}
-			</button>
-		{/each}
+		<div
+			style="width: {size}px;"
+			class="fit-in-screen grid grid-cols-4 duration-1000 {isSolved()
+				? 'gap-0 p-0 mt-1'
+				: 'gap-1 p-1'}"
+		>
+			{#each cells as cell, i (cell)}
+				<button
+					animate:flip={{ duration: 250 }}
+					class:gap={cell.id === gapId && !isSolved()}
+					class:isCorrect={cell.id === i}
+					on:click={() => move(i)}
+					class="grayscale rounded shadow flex items-center justify-center text-xl aspect-square bg-no-repeat"
+					style="background-image: url({bgUrl}); background-size: {cols *
+						100}%; background-position: {cell.offsetX}% {cell.offsetY}%;"
+				>
+					{#if helpText && cell.id !== gapId && !isSolved()}
+						<div
+							class="bg-gray-700 text-white opacity-80 shadow-xl flex w-8 md:w-12 justify-center items-center aspect-square rounded"
+						>
+							{cell.id + 1}
+						</div>
+					{/if}
+				</button>
+			{/each}
+		</div>
 	</div>
 </div>
 
