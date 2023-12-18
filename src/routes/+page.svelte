@@ -1,9 +1,6 @@
 <script lang="ts">
-	import { page } from '$app/stores';
-	import { convertImg } from '$lib/img';
-	import { onMount } from 'svelte';
 	import { flip } from 'svelte/animate';
-	import Layout from './+layout.svelte';
+
 	let helpText = false;
 
 	type Vec = { x: number; y: number };
@@ -79,16 +76,15 @@
 		}
 	};
 	shuffle();
-	let width: number, height: number;
-	$: size = Math.min(width, height);
+
 	const restart = () => {
 		bgUrl = randomBg();
 		shuffle();
 	};
 </script>
 
-<div class="flex flex-col h-full m-auto">
-	<div style="width: {size}px;" class="px-1 pt-1 text-white grid grid-cols-4 gap-1">
+<div class="flex flex-col h-full m-auto select-none">
+	<div class="px-1 pt-1 text-white grid grid-cols-4 gap-1">
 		<button
 			on:click={() => (helpText = !helpText)}
 			class="p-2 rounded bg-gray-700 {helpText && 'shadow bg-gray-500'}">Help</button
@@ -96,14 +92,9 @@
 		<div class="col-span-2"></div>
 		<button class="bg-gray-600 rounded-sm" on:click={() => restart()}>Restart</button>
 	</div>
-	<div
-		bind:clientHeight={height}
-		bind:clientWidth={width}
-		class="flex flex-col flex-grow justify-center"
-	>
+	<div class="flex flex-col flex-grow justify-center items-center">
 		<div
-			style="width: {size}px;"
-			class="fit-in-screen grid grid-cols-4 duration-1000 {isSolved()
+			class="fit-in-screen grid grid-cols-4 duration-500 {isSolved()
 				? 'gap-0 p-0 mt-1'
 				: 'gap-1 p-1'}"
 		>
@@ -113,7 +104,7 @@
 					class:gap={cell.id === gapId && !isSolved()}
 					class:isCorrect={cell.id === i}
 					on:click={() => move(i)}
-					class="grayscale rounded shadow flex items-center justify-center text-xl aspect-square bg-no-repeat"
+					class="grayscale flex items-center justify-center text-xl aspect-square bg-no-repeat"
 					style="background-image: url({bgUrl}); background-size: {cols *
 						100}%; background-position: {cell.offsetX}% {cell.offsetY}%;"
 				>
@@ -132,12 +123,12 @@
 
 <style lang="postcss">
 	.fit-in-screen {
-		width: min(100, 100vh);
+		width: min(100vw, 100vh - 3rem);
 	}
 	.gap {
-		@apply bg-none shadow-none -z-10 !important;
+		@apply bg-none -z-10 !important;
 	}
 	.isCorrect {
-		@apply grayscale-0 rounded-none !important;
+		@apply grayscale-0 !important;
 	}
 </style>
