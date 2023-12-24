@@ -5,8 +5,8 @@
 
 	type Vec = { x: number; y: number };
 	const cols = 4;
-
-	let randomBg = () => `/bg${Math.floor(Math.random() * 9)}.jpeg`;
+	const bgCount = 16;
+	let randomBg = () => `/bg${Math.floor(Math.random() * bgCount)}.jpeg`;
 	let bgUrl = randomBg();
 	const indexToVec = (i: number) => ({
 		x: i % cols,
@@ -84,14 +84,17 @@
 </script>
 
 <div class="flex flex-col h-full m-auto select-none">
-	<div class="px-1 pt-1 text-white grid grid-cols-4 gap-1">
-		<button
-			on:click={() => (helpText = !helpText)}
-			class="p-2 rounded bg-gray-700 {helpText && 'shadow bg-gray-500'}">Help</button
-		>
-		<div class="col-span-2"></div>
-		<button class="bg-gray-600 rounded-sm" on:click={() => restart()}>Restart</button>
+	<div class="flex justify-center">
+		<div class="fit-in-screen px-1 pt-1 text-white grid grid-cols-4 gap-1 svelte-9v155s">
+			<button
+				on:click={() => (helpText = !helpText)}
+				class="p-2 rounded bg-gray-700 border border-transparent">Help</button
+			>
+			<div class="col-span-2"></div>
+			<button on:click={() => restart()} class="bg-gray-600 rounded-sm">Restart</button>
+		</div>
 	</div>
+
 	<div class="flex flex-col flex-grow justify-center items-center">
 		<div
 			class="fit-in-screen grid grid-cols-4 duration-500 {isSolved()
