@@ -7,7 +7,7 @@
 	const cols = 4;
 	const bgCount = 16;
 	let randomBg = () => `/bg${Math.floor(Math.random() * bgCount)}.jpeg`;
-	let bgUrl = randomBg();
+	let bgUrl = '/bg0.jpeg';
 	const indexToVec = (i: number) => ({
 		x: i % cols,
 		y: Math.floor(i / cols)
